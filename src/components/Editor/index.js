@@ -1,13 +1,12 @@
-export default function Editor({ $target }) {
+import { requestGET } from '../../utils/api.js'
+
+export default function Editor({ $target, initialState }) {
   const $editor = document.createElement('div')
   $editor.className = 'Editor'
 
   $target.appendChild($editor)
 
-  this.state = {
-    title: 'Untitled',
-    content: 'nope',
-  }
+  this.state = initialState
 
   this.setState = (nextState) => {
     this.state = nextState
@@ -22,5 +21,21 @@ export default function Editor({ $target }) {
     `
   }
 
-  this.render()
+  const init = async () => {
+    $editor.addEventListener('keyup', (e) => {})
+
+    const { selectedDocumentId } = this.state
+    if (selectedDocumentId) {
+      const selectedDocument = await requestGET(
+        `documents/${selectedDocumentId}`,
+      )
+
+      this.setState({
+        ...this.state,
+        selectedDocument,
+      })
+    }
+  }
+
+  init()
 }
